@@ -4,10 +4,7 @@ Hermes Agent 向量記憶資料庫 - PostgreSQL PG15 + pgvector
 
 ## 資料庫連線
 
-- Host: blog.softsnail.com
-- Port: 1432
-- Database: db_memory
-- Schema: Rex-625081
+連線資訊儲存於環境變數，請參閱內部文件。
 
 ## Schema: Rex-625081
 
