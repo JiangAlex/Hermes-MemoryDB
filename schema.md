@@ -1,40 +1,34 @@
-# Memory Database Schema
+# Hermes-MemoryDB Schema
 
-## SQLite Vector Database for OpenClaw
+PostgreSQL PG15 + pgvector 向量資料庫
 
-### Tables
+## Schema: Rex-625081
 
-#### memories
-Long-term curated memories (corresponds to MEMORY.md)
-- `id` INTEGER PRIMARY KEY
-- `category` TEXT - e.g., "project", "person", "preference", "skill"
-- `title` TEXT - brief title
-- `content` TEXT - the actual memory content
-- `tags` TEXT - comma-separated tags for filtering
-- `created_at` TIMESTAMP
-- `updated_at` TIMESTAMP
+### daily_log
+每日筆記（對應 memory/YYYY-MM-DD.md）
+| 欄位 | 類型 | 說明 |
+|------|------|------|
+| id | INTEGER | 主鍵 |
+| log_date | DATE | 日期 (YYYY-MM-DD) |
+| content | TEXT | 原始 markdown 內容 |
+| metadata | JSONB | 擴充metadata |
+| created_at | TIMESTAMP | 建立時間 |
 
-#### daily_notes
-Raw daily logs (corresponds to memory/YYYY-MM-DD.md)
-- `id` INTEGER PRIMARY KEY
-- `date` TEXT UNIQUE - YYYY-MM-DD format
-- `content` TEXT - raw markdown content
-- `created_at` TIMESTAMP
+### longterm_memory
+長期記憶（對應 MEMORY.md）
+| 欄位 | 類型 | 說明 |
+|------|------|------|
+| id | INTEGER | 主鍵 |
+| content | TEXT | 記憶內容 |
+| embedding | VECTOR | 向量嵌入 (pgvector) |
+| metadata | JSONB | 擴充metadata |
+| created_at | TIMESTAMP | 建立時間 |
 
-#### memory_embeddings
-Vector embeddings for semantic search (using sqlite-vector)
-- `id` INTEGER PRIMARY KEY
-- `memory_id` INTEGER - FK to memories.id
-- `memory_type` TEXT - 'memory' or 'daily_note'
-- `embedding` BLOB - binary vector data (1536 dim for text-embedding-3-small)
-- `created_at` TIMESTAMP
+## 向量搜尋
 
-### Indexes
-- `idx_memories_category` on memories(category)
-- `idx_memories_tags` on memories(tags)
-- `idx_daily_notes_date` on daily_notes(date)
-- `idx_embeddings_memory_id` on memory_embeddings(memory_id)
+使用 pgvector 擴充進行相似度搜尋。
 
-### Vector Search
-Using sqlite-vector extension for similarity search.
-Fallback to LIKE search if vector extension unavailable.
+目前設定：
+- Provider: MiniMax
+- Model: text-embedding-3-small
+- Dimension: 1536
